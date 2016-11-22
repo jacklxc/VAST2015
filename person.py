@@ -26,7 +26,7 @@ class Person(object):
 
 	def add_type(self, TYPE):
 		type = True if TYPE=="check-in" else False
-		self.type = np.append(self.type,type, axis=0)
+		self.type = np.append(self.type,np.array([[type]]), axis=0)
 
 	def add_time(self, time):
 		if time!="Error":
@@ -45,11 +45,54 @@ class Person(object):
 		MAP is the mapping between coordinate (x,y) and the facilities.
 		"""
 		self.time_on_each_facility = self._time_on_each_facility(MAP)
-		self.time_on_each_area = self._time_on_each_facility(areaMAP)
+		self.time_on_each_area = self._time_on_each_area(areaMAP)
 		self.time_enter = self.time[0,:]
 		self.time_exit = self.time[-1,:]
 		self.num_facility_visited = self._num_facility_visited()
+		self.num_check_in = np.sum(self.type)
 		
+	def aggregate_data(self):
+		dimension = 78 # Total data dimensions to aggregate
+
+		data = np.zeros((1,dimension))
+		prev_dim = 0
+
+		dim = prev_dim + self.time_on_each_facility.shape[0]
+		seconds = self._time2seconds(self.time_on_each_facility)
+		data[0,prev_dim:dim] = seconds
+		prev_dim = dim
+
+		dim = prev_dim + self.time_on_each_area.shape[0]
+		seconds = self._time2seconds(self.time_on_each_area)
+		data[0,prev_dim:dim] = seconds
+
+		seconds = self._time2seconds(self.time_enter)
+		data[0,dim] = seconds
+		dim +=1
+
+		seconds = self._time2seconds(self.time_exit)
+		data[0,dim] = seconds
+		dim +=1
+
+		seconds = self.num_facility_visited
+		data[0,dim] = seconds
+		dim +=1
+
+		seconds = self.num_check_in
+		data[0,dim] = seconds
+
+		return data
+
+	def _time2seconds(self, time):
+		if len(time.shape)>1:
+			N = time.shape[0]
+		else:
+			N = 1
+			time = np.expand_dims(time,axis=0)
+		seconds = np.zeros((1,N))
+		seconds[0,:] = time[:,0]*3600 + time[:,1]*60 + time[:,2]
+		return seconds
+
 	def _time_on_each_facility(self, MAP):
 		time_on_places = np.zeros((self.total_facility+1,3), dtype = np.int)
 		prev_time = self.time[0,:]
@@ -107,6 +150,7 @@ class Person(object):
 					minute += 60
 				time[n,0], time[n,1], time[n,2] = hour, minute, second
 		return time
+
 
 
 

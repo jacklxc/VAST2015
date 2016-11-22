@@ -64,3 +64,35 @@ for i in range(100):
         else:
             areamap[i].append("out")
 print areamap
+###########
+visitors = {}
+with open('park-movement-Fri-FIXED-2.0.csv') as csvfile:
+    reader = csv.DictReader(csvfile)
+    counter = 0
+    for row in reader:
+        ID = row["id"]
+        time = row['Timestamp']
+        if ID in visitors:
+            visitors[ID].add(row)
+        else:
+            visitors[ID] = Person(row)
+        counter += 1
+        if counter%100000==0:
+            print counter
+            print "The number of visitors is %d" % (len(visitors),)
+#############
+count = 0
+for ID in visitors.keys():
+    count+=1
+    visitor = visitors[ID]
+    visitor.extract_features(MAP,areaMAP)
+    if count % 500 == 0:
+        print count
+##########
+toPCA = np.zeros((0,78))
+for ID in visitors.keys():
+    visitor = visitors[ID]
+    aggregated = visitor.aggregate_data()
+    toPCA = np.append(toPCA, aggregated, axis=0)
+###########
+np.savetxt("foo.csv", X_r, delimiter=",")
