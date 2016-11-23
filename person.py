@@ -50,7 +50,19 @@ class Person(object):
 		self.time_exit = self.time[-1,:]
 		self.num_facility_visited = self._num_facility_visited()
 		self.num_check_in = np.sum(self.type)
-		
+
+	def _time_interval(self):
+		time_interval = self.time[1:,:] - self.time[:-1,:]
+		time_interval = self._format_time(time_interval)
+		interval_in_seconds = np.sum(time_interval,axis=1)
+		interval_in_seconds = np.append(np.zeros((1,)),interval_in_seconds)
+		return interval_in_seconds
+	
+	def route(self):
+		self.time_interval = self._time_interval()
+		np.expand_dim(self.time_interval.T)
+
+
 	def aggregate_data(self):
 		dimension = 78 # Total data dimensions to aggregate
 

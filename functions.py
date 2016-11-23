@@ -1,3 +1,8 @@
+"""
+This file contains all kinds of code snippets.
+"""
+
+from person import Person
 import numpy as np
 import cPickle
 import csv
@@ -87,8 +92,9 @@ def crawl_visitors(fileName):
             if counter%100000==0:
                 print counter
                 print "The number of visitors is %d" % (len(visitors),)
+    return visitors
 
-def extract_visitors_features(visitors):
+def extract_visitors_features(visitors, MAP, areaMAP):
     count = 0
     for ID in visitors.keys():
         count+=1
@@ -104,9 +110,27 @@ def aggregate_visitors_data(visitors):
         visitor = visitors[ID]
         aggregated = visitor.aggregate_data()
         toPCA = np.append(toPCA, aggregated, axis=0)
-        IDlist.append(ID)
+        IDlist.append(int(ID))
     return toPCA, IDlist
 
 def np2csv(fileName, array):
     np.savetxt(fileName, array, delimiter=",")
 
+def output_features(toPCA):
+    features = toPCA[:,-4:]
+    np2csv("features.csv",features)
+def plot_PCA(X_r):
+    plt.figure()
+    for i in range(X_r.shape[0]):
+        plt.scatter(X_r[i,0],X_r[i,1])
+    plt.title('PCA')
+    plt.show()
+
+def list2csv(fileName, list):
+    with open(fileName, 'wb') as myfile:
+        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+        wr.writerow(list)
+def doPCA(toPCA):
+    pca = PCA(n_components=2, whiten=True)
+    X_r = pca.fit_transform(toPCA)
+    kmeans = KMeans(n_clusters=5).fit_predict(X_r)
