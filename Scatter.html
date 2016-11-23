@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: Loading data from a CSV file</title>
+		<script type="text/javascript" src="../d3/d3.v3.js"></script>
+		<style type="text/css">
+			/*style for axis */
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: black;
+				shape-rendering: crispEdges;
+			}
+			.axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+			/* style for scatter dots */
+			.scatter {
+				fill: navy;
+				fill-opacity:0.3;
+			}
+			circle:hover {
+				fill: red;
+				fill-opacity:0.8;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+			var numList = []
+			//Read the file and wash the data//
+			d3.csv("PCA_alldata.csv", function(data) {
+				data.forEach(function(d) {
+					d.pca1 = +d.x
+					d.pca2 = +d.y
+					d.timein = +Math.floor(d.time_enter/3600)
+					d.minin = +Math.floor((d.time_enter - d.timein*3600)/60)
+					d.secin = +(d.time_enter - d.timein*3600-d.minin*60)
+					d.timeout = +Math.floor(d.time_exit/3600)
+					d.minout = +Math.floor((d.time_exit - d.timeout*3600)/60)
+					d.secout = +(d.time_exit - d.timeout*3600-d.minout*60)
+					d.facility = +d.facility_visited
+					d.check = +d.num_check_in
+					d.id = +d.ID
+					//Put the data into a 2D set//
+					set = [d.pca1,d.pca2,d.timein,d.timeout,d.facility,d.check,d.minin,d.secin,d.minout,d.secout,d.id]
+					numList.push(set)
+				});
+			//Define the margin//
+			var padding = 40;
+			//Define the scale//
+			var xScale = d3.scale.linear()
+								.domain([d3.min(numList,function(d){return d[0];}), d3.max(numList,function(d){return d[0];})])
+								.range([padding,800-padding]);
+			var yScale = d3.scale.linear()
+								.domain([d3.min(numList,function(d){return d[1];}), d3.max(numList,function(d){return d[1];})])
+								.range([500- padding,padding]);
+
+			//Draw the scatter plot//
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", 800)
+						.attr("height", 500);
+			svg.selectAll("circle")
+				.data(numList)
+				.enter()
+				.append("circle")
+				.attr("class", "scatter")
+				.attr("cx", function(d) {
+					return xScale(d[0]);})
+				.attr("cy", function(d) {
+					return yScale(d[1]);
+				})
+				.attr("r", 2)
+				.on("mouseover", function(d,i){
+					d3.select(this)
+						.attr("r", 5)
+				})
+				.on("mouseout", function(d,i){
+					d3.select(this)
+						.transition()
+						.attr("r",2)
+				})
+				.append("title")
+				.text(function(d){
+					return "ID: " + d[10] + "\nTime Enter: " + d[2] + ":" + d[6] + ":" +d[7] + "\nTime Exit: " + d[3] + ":" + d[8] + ":" + d[9] + "\nFacility: " + d[4] + "\nNum of Check in: " + d[5];
+				});
+			//Draw x and y axis//
+			var xAxis = d3.svg.axis()
+							  .scale(xScale)
+							  .orient("bottom")
+			var yAxis = d3.svg.axis()
+								.scale(yScale)
+								.orient("left");
+
+			svg.append("g")
+			   .attr("class","axis")
+			   .attr("transform", "translate(0," + (500-padding)+ ")")
+			   .call(xAxis);	
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.call(yAxis);
+				});
+
+		</script>
+	</body>
+</html>
