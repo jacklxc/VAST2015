@@ -55,12 +55,14 @@ class Person(object):
 		time_interval = self.time[1:,:] - self.time[:-1,:]
 		time_interval = self._format_time(time_interval)
 		interval_in_seconds = np.sum(time_interval,axis=1)
-		interval_in_seconds = np.append(np.zeros((1,)),interval_in_seconds)
+		interval_in_seconds = np.append(np.zeros((1,),dtype=np.int),interval_in_seconds)
 		return interval_in_seconds
 	
 	def route(self):
 		self.time_interval = self._time_interval()
-		np.expand_dim(self.time_interval.T)
+		time_interval = np.expand_dims(self.time_interval, axis=1)
+		route = np.concatenate((self.time,time_interval,self.position), axis=1)
+		return route
 
 
 	def aggregate_data(self):
