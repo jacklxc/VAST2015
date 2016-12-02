@@ -50,13 +50,14 @@ class Person(object):
 		self.time_exit = self.time[-1,:]
 		self.num_facility_visited = self._num_facility_visited()
 		self.num_check_in = np.sum(self.type)
+		self.time_interval = self._time_interval_minutes()
 
-	def _time_interval(self):
+	def _time_interval_minutes(self):
 		time_interval = self.time[1:,:] - self.time[:-1,:]
 		time_interval = self._format_time(time_interval)
-		interval_in_seconds = np.sum(time_interval,axis=1)
-		interval_in_seconds = np.append(np.zeros((1,),dtype=np.int),interval_in_seconds)
-		return interval_in_seconds
+		interval_in_minutes = time_interval[:,0]*60 + time_interval[:,1]
+		interval_in_minutes = np.append(interval_in_minutes,np.ones((1,),dtype=np.int))
+		return interval_in_minutes
 	
 	def route(self):
 		self.time_interval = self._time_interval()
@@ -103,7 +104,7 @@ class Person(object):
 		else:
 			N = 1
 			time = np.expand_dims(time,axis=0)
-		seconds = np.zeros((1,N))
+		seconds = np.zeros((1,N),dtype = np.int)
 		seconds[0,:] = time[:,0]*3600 + time[:,1]*60 + time[:,2]
 		return seconds
 
@@ -164,6 +165,11 @@ class Person(object):
 					minute += 60
 				time[n,0], time[n,1], time[n,2] = hour, minute, second
 		return time
+
+	def time_period_on_places(self,MAP,places):
+		for n in range(self.time.shape[0]):
+			place = MAP[self.position[n,0], self.position[n,1]]
+			places[place].add_person(self.time[n,:],self.time_interval[n])
 
 
 

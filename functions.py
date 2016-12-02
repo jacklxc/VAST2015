@@ -3,6 +3,7 @@ This file contains all kinds of code snippets.
 """
 
 from person import Person
+from place import Place
 import numpy as np
 import cPickle
 import csv
@@ -57,6 +58,7 @@ def printRoute(visitor,MAP):
     for i in range(visitor.time.shape[0]):
         print "At time %d: %d: %d, coordinate %d,%d, facility #%d" % (visitor.time[i,0],visitor.time[i,1],visitor.time[i,2],visitor.position[i,0],visitor.position[i,1],
         MAP[visitor.position[i,0],visitor.position[i,1]])
+
 def getAreaMAP(areaMAP):
     areamap = []
     for i in range(100):
@@ -94,6 +96,42 @@ def crawl_visitors(fileName):
                 print "The number of visitors is %d" % (len(visitors),)
     return visitors
 
+def crawl_places():
+    places = []
+    for i in range(68):
+        places.append(Places(i))
+
+    with open(fileName) as csvfile:
+        reader = csv.DictReader(csvfile)
+        counter = 0
+        for row in reader:
+
+            counter += 1
+            if counter%100000==0:
+                print counter
+                print "The number of visitors is %d" % (len(visitors),)
+
+def make_places():
+    places = []
+    for i in range(69):
+        places.append(Place(i))
+    areas = []
+    for i in range(5):
+        areas.append(Place(i))
+    return places, areas
+
+def count_populations(visitors,MAP,places):
+    for ID in visitors.keys():
+        visitor = visitors[ID]
+        visitor.time_period_on_places(MAP,places)
+
+def aggregate_places_data(places):
+    population_record = np.zeros((60*16,0),dtype=np.int)
+    for i in range(len(places)):
+        population = np.expand_dims(places[i].population,axis=1)
+        population_record = np.append(population_record,population,axis=1)
+    return population_record
+
 def extract_visitors_features(visitors, MAP, areaMAP):
     count = 0
     for ID in visitors.keys():
@@ -119,6 +157,7 @@ def np2csv(fileName, array):
 def output_features(toPCA):
     features = toPCA[:,-4:]
     np2csv("features.csv",features)
+
 def plot_PCA(X_r):
     plt.figure()
     for i in range(X_r.shape[0]):
@@ -130,7 +169,10 @@ def list2csv(fileName, list):
     with open(fileName, 'wb') as myfile:
         wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
         wr.writerow(list)
+
 def doPCA(toPCA):
     pca = PCA(n_components=2, whiten=True)
     X_r = pca.fit_transform(toPCA)
     kmeans = KMeans(n_clusters=5).fit_predict(X_r)
+
+
