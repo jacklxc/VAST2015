@@ -5,8 +5,13 @@ This file contains all kinds of code snippets.
 from person import Person
 from place import Place
 import numpy as np
+import matplotlib.pyplot as plt
 import cPickle
 import csv
+
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+
 
 def mapFacility(fileName):
     facilities = []
@@ -120,6 +125,20 @@ def make_places():
         areas.append(Place(i))
     return places, areas
 
+def make_positions():
+    positions = []
+    for i in range(100):
+        for j in range(100):
+            positions.append(Place((i,j)))
+    return positions
+
+def positionMAP():
+    positionMAP = np.zeros((100,100),dtype=np.int)
+    for i in range(100):
+        for j in range(100):
+            positionMAP[i,j] += 100*i+j
+    return  positionMAP
+
 def count_populations(visitors,MAP,places):
     for ID in visitors.keys():
         visitor = visitors[ID]
@@ -128,6 +147,8 @@ def count_populations(visitors,MAP,places):
 def aggregate_places_data(places):
     population_record = np.zeros((60*16,0),dtype=np.int)
     for i in range(len(places)):
+        if i%500==0:
+            print i
         population = np.expand_dims(places[i].population,axis=1)
         population_record = np.append(population_record,population,axis=1)
     return population_record
@@ -152,11 +173,11 @@ def aggregate_visitors_data(visitors):
     return toPCA, IDlist
 
 def np2csv(fileName, array):
-    np.savetxt(fileName, array, delimiter=",")
+    np.savetxt(fileName, array, delimiter=",",fmt="%1.1d")
 
 def output_features(toPCA):
     features = toPCA[:,-4:]
-    np2csv("features.csv",features)
+    np.savetxt("features.csv", features, delimiter=",",fmt="%1.1d")
 
 def plot_PCA(X_r):
     plt.figure()
@@ -174,5 +195,6 @@ def doPCA(toPCA):
     pca = PCA(n_components=2, whiten=True)
     X_r = pca.fit_transform(toPCA)
     kmeans = KMeans(n_clusters=5).fit_predict(X_r)
+    return X_r, kmeans
 
 
