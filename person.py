@@ -60,9 +60,11 @@ class Person(object):
 		return interval_in_minutes
 	
 	def route(self):
-		self.time_interval = self._time_interval()
 		time_interval = np.expand_dims(self.time_interval, axis=1)
-		route = np.concatenate((self.time,time_interval,self.position), axis=1)
+		ID = int(self.id)
+		IDs = np.zeros(time_interval.shape,dtype=np.int)
+		IDs[:] = ID
+		route = np.concatenate((IDs,self.time,time_interval,self.position), axis=1)
 		return route
 
 
