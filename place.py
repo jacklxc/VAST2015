@@ -28,6 +28,10 @@ class Place(object):
 		end = start + interval
 		self.population[start:end+1] += 1
 
+	def population_per_unit_time(self,unit_time):
+		index = np.arange(60*16)%unit_time==0
+		return self.population[index]
+
 	def _time_interval(self):
 		time_interval = self.time[1:,:] - self.time[:-1,:]
 		time_interval = self._format_time(time_interval)

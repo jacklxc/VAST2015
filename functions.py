@@ -144,12 +144,12 @@ def count_populations(visitors,MAP,places):
         visitor = visitors[ID]
         visitor.time_period_on_places(MAP,places)
 
-def aggregate_places_data(places):
-    population_record = np.zeros((60*16,0),dtype=np.int)
+def aggregate_places_data(places,unit_time):
+    population_record = np.zeros((int(60*16/unit_time),0),dtype=np.int)
     for i in range(len(places)):
         if i%500==0:
             print i
-        population = np.expand_dims(places[i].population,axis=1)
+        population = np.expand_dims(places[i].population_per_unit_time(unit_time),axis=1)
         population_record = np.append(population_record,population,axis=1)
     return population_record
 
@@ -162,10 +162,12 @@ def extract_visitors_features(visitors, MAP, areaMAP):
         if count % 500 == 0:
             print count
 
-def aggregate_visitors_data(visitors):
+def aggregate_visitors_data(visitors,names=None):
     toPCA = np.zeros((0,78))
     IDlist = []
-    for ID in visitors.keys():
+    if names is None:
+    	names = visitors.keys()
+    for ID in names:
         visitor = visitors[ID]
         aggregated = visitor.aggregate_data()
         toPCA = np.append(toPCA, aggregated, axis=0)
@@ -197,4 +199,39 @@ def doPCA(toPCA):
     kmeans = KMeans(n_clusters=5).fit_predict(X_r)
     return X_r, kmeans
 
+def aggregate_routes(IDs):
+	routes = np.zeros((0,7),dtype=np.int)
+	counter = 0
+	for ID in IDs:
+	    counter += 1
+	    if counter%100==0:
+	        print counter
+	    route = visitors[ID].route()
+	    routes = np.append(routes,route,axis=0)
+	return routes
 
+def select_ID_PCA(X_r,IDlist):
+	IDs = []
+	for i in range(len(IDs)):
+	    if X_r[i,0]>1 or X_r[i,0]<-1.2 or X_r[i,1]>2.4 or X_r[i,1]<-2:
+	        IDs.append(str(IDlist[i]))
+	return IDs
+
+def reduce_PCA_data(X_r, IDlist):
+	dx = 0.1
+	width = 8
+	height = 7
+	slot = np.zeros((int(width/dx),int(height/dx)),dtype=np.int)
+	for i in range(len(IDlist)):
+	    X = X_r[i,0]
+	    Y = X_r[i,1]
+	    x = int((X+2)/dx)
+	    y = int((Y+3)/dx)
+	    if slot[x,y]==0:
+	        slot[x,y] = IDlist[i]
+	reduced_IDlist = []
+	for i in range(slot.shape[0]):
+	    for j in range(slot.shape[1]):
+	        if slot[i,j]!=0:
+	            reduced_IDlist.append(str(slot[i,j]))
+	return reduced_IDlist
