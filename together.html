@@ -41,26 +41,27 @@
 	</head>
 	<body>
 
-		<script type="text/javascript">
-			var numList = [],
+		<script type="text/javascript" >
+			var numList = {},
 				numList2 = [];
 			//Read the file and wash the data//
 			d3.csv("all_routes.csv", function(data) {
 				data.forEach(function(d) {
-					d.hour = +d.hour
-					d.min = +d.minute
-					d.sec = +d.second
-					d.time = +d.time_interval
-					d.x = +d.x
-					d.y = +d.y
-					d.id = +d.ID
+					d.hour = +d.hour;
+					d.min = +d.minute;
+					d.sec = +d.second;
+					d.time = +d.time_interval;
+					d.x = +d.x;
+					d.y = +d.y;
+					d.id = +d.ID;
 					//Put the data into a 2D set//
-					set1 = [d.x, d.y, d.hour, d.min, d.sec, d.time]
-					numList.push(d.id)
-					
-					
+					set1 = [d.x, d.y, d.hour, d.min, d.sec, d.time];
+					if(!(d.id in numList)){
+						numList[d.id] = []
+					}
+					numList[d.id].push(set1);
 			});
-			console.log(numList)
+			console.log(numList);
 		})
 
 		d3.csv("PCA_alldata.csv", function(data) {
@@ -269,23 +270,6 @@
 
 		}
 	});
-
-
-
-				
-							
-
-
-
-
-
-
-					
-
-			
-
-
-
 		</script>
 	</body>
 </html>
