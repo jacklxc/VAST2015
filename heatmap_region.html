@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Heatmap</title>
+		<script type="text/javascript" src="../d3/d3.v3.js"></script>
+		<style type="text/css">
+			/*style for axis */
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: black;
+				shape-rendering: crispEdges;
+			}
+			.axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+			/* style for scatter dots */
+			.heatmap{
+				float:left;
+			}
+			.graph-svg{
+				background-image:url("Park Map.png");
+				background-size: 1000px 1000px;
+				background-repeat:no-repeat; 
+				margin-left: 10px;
+				margin-top: 10px;
+			}
+
+			circle:hover {
+				fill: navy;
+				fill-opacity:1;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="option">
+			<h1>Dino Fun World Heatmap</h1>
+		    <input name="updateButton" 
+		           type="button" 
+		           value="8:00" 
+		           onclick="update(3)" />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="8:30"
+		           onclick="update(4)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="9:00"
+		           onclick="update(5)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="9:30"
+		           onclick="update(6)"  />
+   		    <input name="updateButton" 
+		           type="button" 
+		           value="10:00"
+		           onclick="update(7)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="10:30" 
+		           onclick="update(8)" />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="11:00"
+		           onclick="update(9)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="11:30"
+		           onclick="update(10)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="12:00"
+		           onclick="update(11)"  />
+   		    <input name="updateButton" 
+		           type="button" 
+		           value="12:30"
+		           onclick="update(12)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="13:00" 
+		           onclick="update(13)" />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="13:30"
+		           onclick="update(14)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="14:00"
+		           onclick="update(15)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="14:30"
+		           onclick="update(16)"  />
+   		    <input name="updateButton" 
+		           type="button" 
+		           value="15:00"
+		           onclick="update(17)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="15:30" 
+		           onclick="update(18)" />
+		    <br>
+		    <input name="updateButton" 
+		           type="button" 
+		           value="16:00"
+		           onclick="update(19)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="16:30"
+		           onclick="update(20)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="17:00"
+		           onclick="update(21)"  />
+   		    <input name="updateButton" 
+		           type="button" 
+		           value="17:30"
+		           onclick="update(22)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="18:00" 
+		           onclick="update(23)" />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="18:30"
+		           onclick="update(24)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="19:00"
+		           onclick="update(25)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="19:30"
+		           onclick="update(26)"  />
+   		    <input name="updateButton" 
+		           type="button" 
+		           value="20:00"
+		           onclick="update(27)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="20:30" 
+		           onclick="update(28)" />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="21:00"
+		           onclick="update(29)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="21:30"
+		           onclick="update(30)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="22:00"
+		           onclick="update(31)"  />
+   		    <input name="updateButton" 
+		           type="button" 
+		           value="22:30"
+		           onclick="update(32)"  />
+		    <input name="updateButton" 
+		           type="button" 
+		           value="23:00"
+		           onclick="update(33)"  />
+
+		</div>
+		<div class ="heatmap"></div>
+		<div class = "bar">
+			<h1 style="font-size:20px">Area Population</h1>
+		</div>
+
+		<script type="text/javascript">
+			var numList = [];
+			//Read the file and wash the data//
+			d3.csv("all_position_data.csv", function(data) {
+				data.forEach(function(d) {
+					d.x = +Math.floor(d.position/100)
+					d.y = +d.position-100*d.x
+					set = [d.x,d.y]
+					for(i=1;i<33;i++){
+						a = i.toString()
+						d[a] = +d[a]
+						set.push(d[a]) 
+					}
+					numList.push(set)
+					
+			});
+
+			//Define the margin//
+			var padding = 0;
+			//Define the scale//
+			var xScale = d3.scale.linear()
+								.domain([0, 100])
+								.range([padding,1000-padding]);
+			var yScale = d3.scale.linear()
+								.domain([0, 100])
+								.range([1000- padding,padding]);
+			var popset =[];
+
+			for(i=0;i<numList.length;i++){
+				for(j=3;j<34;j++){
+					popset.push(numList[i][j])
+				}
+			};
+
+			mxapop = 40;
+			minpop = d3.min(popset);
+
+
+
+			//Draw the scatter plot//
+			var svg = d3.select("body")
+						.select("div.heatmap")
+						.append("svg")
+						.attr("width", 1100)
+						.attr("height", 1100)
+						.attr("class", "graph-svg");
+
+			svg.selectAll("rect")
+				.data(numList)
+				.enter()
+				.append("rect")
+				.attr("class", "heatmap")
+				.attr("x", function(d) {
+					return xScale(d[0]);})
+				.attr("y", function(d) {
+					return yScale(d[1])-10;
+				})
+				.attr("height", 10)
+				.attr("width", 10)
+				.attr("fill",function(d){return d3.rgb(255*(d[3]-minpop)/(mxapop-minpop)/50,255*(d[3]-minpop)/(mxapop-minpop),255*(d[3]-minpop)/(mxapop-minpop))})
+				// .on("click",barupdate(2))
+				.style("opacity",0.6)
+				.append("title")
+				.text(function(d){
+					return "Population: " + d[3];
+				});
+
+			svg.selectAll("rect")
+				.data(numList).exit().remove()
+
+			// //Draw x and y axis//
+			// var xAxis = d3.svg.axis()
+			// 				  .scale(xScale)
+			// 				  .orient("bottom")
+			// var yAxis = d3.svg.axis()
+			// 					.scale(yScale)
+			// 					.orient("left");
+
+			// svg.append("g")
+			//    .attr("class","axis")
+			//    .attr("transform", "translate(0," + (700-padding)+ ")")
+			//    .call(xAxis);	
+
+			// svg.append("g")
+			// 	.attr("class", "axis")
+			// 	.attr("transform", "translate(" + padding + ",0)")
+			// 	.call(yAxis);
+			});
+
+		function update(hour) {
+					var numList=[]
+
+					d3.csv("all_position_data.csv", function(data) {
+						data.forEach(function(d) {
+							d.x = +Math.floor(d.position/100)
+							d.y = +d.position-100*d.x
+							set = [d.x,d.y]
+							for(i=1;i<33;i++){
+								a = i.toString()
+								d[a] = +d[a]
+								set.push(d[a]) 
+							}
+							numList.push(set)
+							
+					});
+			var padding = 0;
+			//Define the scale//
+			var xScale = d3.scale.linear()
+								.domain([0, 100])
+								.range([padding,1000-padding]);
+			var yScale = d3.scale.linear()
+								.domain([0, 100])
+								.range([1000- padding,padding]);
+			var popset =[];
+
+			for(i=0;i<numList.length;i++){
+				for(j=3;j<34;j++){
+					popset.push(numList[i][j])
+				}
+			};
+
+			mxapop = 40;
+			minpop = d3.min(popset);
+
+
+			//Draw the scatter plot//
+			var svg = d3.select("body")
+						.select("div.heatmap")
+						.attr("width", 1000)
+						.attr("height", 1000);
+
+			svg.selectAll("rect")
+				.data(numList)
+				.transition()
+				.duration(5)
+				.attr("class", "heatmap")
+				.attr("x", function(d) {
+					return xScale(d[0]);})
+				.attr("y", function(d) {
+					return yScale(d[1])-10;
+				})
+				.attr("height", 10)
+				.attr("width", 10)
+				.attr("fill",function(d){return d3.rgb(255*(d[hour]-minpop)/(mxapop-minpop)/50,255*(d[hour]-minpop)/(mxapop-minpop),255*(d[hour]-minpop)/(mxapop-minpop))})
+				.style("opacity",0.6)
+				.select("title")
+				.transition()
+				.text(function(d){
+					return "Population: " + d[hour];
+				});
+
+			svg.selectAll("rect")
+				.data(numList).exit().remove()
+					})
+				};
+
+				var region = [1,2,3,4,5];
+
+				var heatmap = function(a) {	
+					d3.csv("areapopulation.csv", function(data) {
+						data.forEach(function(d) {
+							d.region = +d.region
+							d.hour = +d.hour
+							d.pop = +d.population
+						})
+					rdata = data.filter(function(d) {
+					    return d.region == a;
+					})
+
+
+					//Define the margin//
+					var padding = 50,
+						height = 530
+						maxpop = d3.max(data,function(d) {
+						return d.pop
+					}),
+						maxhour = d3.max(rdata,function(d) {
+							return d.hour
+						});
+					//Define the scale//
+					var xScale = d3.scale.linear()
+										.domain([8, maxhour])
+										.range([padding,height-padding]);
+					var yScale = d3.scale.linear()
+										.domain([0, maxpop])
+										.range([height - padding,padding]);
+
+					var svg = d3.select("body")
+								.select("div.bar")
+								.append("svg")
+								.attr("width", 500)
+								.attr("height", 500);
+
+					svg.selectAll("rect")
+					   .data(rdata)
+					   .enter()
+					   .append("rect")
+					   .attr("x", function(d,i){
+					   	return ((height-2*padding)/15)*d.hour-(((height-2*padding)/15)*8-padding)-5})
+					   .attr("y", function(d,i) {
+					   	return height - padding - d.pop/(maxpop/430)})
+					   .attr("width", 10)
+					   .attr("height", function(d,i){
+					   	return d.pop/(maxpop/430)
+					   })
+					   .attr("fill","navy")
+					   .append("title")
+					   .text(function(d){
+					   	return "population: " + d.pop
+					   });
+
+
+
+
+
+					//Draw x and y axis//
+					var xAxis = d3.svg.axis()
+									  .scale(xScale)
+									  .orient("bottom")
+					var yAxis = d3.svg.axis()
+										.scale(yScale)
+										.orient("left");
+
+					svg.append("g")
+					   .attr("class","axis")
+					   .attr("transform", "translate(0," + (530-padding)+ ")")
+					   .call(xAxis);	
+
+					svg.append("g")
+						.attr("class", "axis")
+						.attr("transform", "translate(" + padding + ",0)")
+						.call(yAxis);
+		})
+				}
+				heatmap(1)
+			var barupdate = function(a) {
+							d3.csv("areapopulation.csv", function(data) {
+								data.forEach(function(d) {
+									d.region = +d.region
+									d.hour = +d.hour
+									d.pop = +d.population
+								})
+							rdata = data.filter(function(d) {
+							    return d.region == a;
+							})
+
+
+							//Define the margin//
+							var padding = 50,
+								height = 530
+								maxpop = d3.max(data,function(d) {
+								return d.pop
+							}),
+								maxhour = d3.max(rdata,function(d) {
+									return d.hour
+								});
+
+
+							var svg = d3.select("body")
+										.select("div.bar")
+										.attr("width", 1000)
+										.attr("height", 1000);
+
+							svg.selectAll("rect")
+							   .data(rdata)
+							   .transition()
+							   .attr("x", function(d,i){
+							   	return ((height-2*padding)/15)*d.hour-(((height-2*padding)/15)*8-padding)-5})
+							   .attr("y", function(d,i) {
+							   	return height - padding - d.pop/(maxpop/430)})
+							   .attr("width", 10)
+							   .attr("height", function(d,i){
+							   	return d.pop/(maxpop/430)
+							   })
+							   .attr("fill","navy")
+							   .select("title")
+	   						   .transition()
+							   .text(function(d){
+							   	return "population: " + d.pop
+							   });
+
+
+			}
+			)};
+
+		</script>
+	</body>
+</html>
