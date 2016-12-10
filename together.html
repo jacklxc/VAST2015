@@ -101,8 +101,8 @@
 		
 		//Define the margin//
 		var padding = 40;
-		var w = 800
-			h = 500
+		var w = 600
+			h = 600
 		//Define the scale//
 		var xScale = d3.scale.linear()
 							.domain([d3.min(numList2,function(d){return d[0];}), d3.max(numList2,function(d){return d[0];})])
@@ -127,20 +127,21 @@
 			.attr("cy", function(d) {
 				return yScale(d[1]);
 			})
-			.attr("r", 2)
+			.attr("r", 3)
 			.on("mouseover", function(d,i){
 				d3.select(this)
-					.attr("r", 5)
+					.attr("r", 6)
+				update(d[10]);
 			})
 			.on("mouseout", function(d,i){
 				d3.select(this)
 					.transition()
-					.attr("r",2)
+					.attr("r",3)
 			})
 			.on("click", function(d,i){update(d[10])})
 			.append("title")
 			.text(function(d){
-				return "ID: " + d[10] + "\nTime Enter: " + d[2] + ":" + d[6] + ":" +d[7] + "\nTime Exit: " + d[3] + ":" + d[8] + ":" + d[9] + "\nFacility: " + d[4] + "\nNum of Check in: " + d[5];
+				return "ID: " + d[10] + "\nTime Enter: " + d[2] + ":" + d[6] + ":" +d[7] + "\nTime Exit: " + d[3] + ":" + d[8] + ":" + d[9] + "\nNum of facilities visited: " + d[4] + "\nNum of Check in: " + d[5];
 			});
 		//Draw x and y axis//
 		var xAxis = d3.svg.axis()
@@ -177,8 +178,8 @@
 								.domain([0, 100])
 								.range([700- padding,padding]);
 			var timeset =[];
-			var w2 = 1000
-				h2 = 1000
+			var w2 = 700,
+				h2 = 700;
 
 			for(i=0;i<numList[4828].length;i++){
 				var ttime = numList[4828][i][2]*3600+numList[4828][i][3]*60 +numList[4828][i][4];
@@ -258,8 +259,8 @@
 								.domain([0, 100])
 								.range([700- padding,padding]);
 			var timeset =[];
-			var w2 = 1000
-				h2 = 1000
+			var w2 = 600
+				h2 = 600
 
 			for(i=0;i<numList[id].length;i++){
 				var ttime = numList[id][i][2]*3600+numList[id][i][3]*60 +numList[id][i][4];
