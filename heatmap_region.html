@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Heatmap</title>
-		<script type="text/javascript" src="../d3/d3.v3.js"></script>
+		<script type="text/javascript" src="//d3js.org/d3.v3.js"></script>
 		<style type="text/css">
 			/*style for axis */
 			.axis path,
@@ -27,6 +27,13 @@
 				margin-left: 10px;
 				margin-top: 10px;
 			}
+			div#infobox {
+				width: 150px;
+				background: white;
+				border: 1px solid black;
+				display: none;
+				position:absolute;
+			}
 
 			circle:hover {
 				fill: navy;
@@ -37,6 +44,10 @@
 	<body>
 
 		<div id="option">
+			<input name="updateButton" 
+			       type="button" 
+			       value="Back" 
+			       onclick="window.location.assign('index.html', '_blank')" />
 			<h1>Dino Fun World Heatmap</h1>
 		    <input name="updateButton" 
 		           type="button" 
@@ -165,6 +176,11 @@
 		           onclick="update(33)"  />
 
 		</div>
+		<p id="info"></p>
+		<div id="infobox">
+		        <span id="Region"></span>
+		        <span id="Population"></span>
+		</div>
 		<div class ="heatmap"></div>
 		<div class = "bar">
 			<h1 style="font-size:20px">Area Population</h1>
@@ -186,7 +202,19 @@
 					numList.push(set)
 					
 			});
+				var numList2=[];
+				d3.csv("areas_map.csv", function(data) {
+					data.forEach(function(d) {
+						set2 =[]
+						for(i=0;i<100;i++){
+							a = i.toString()
+							d[a] = +d[a]
+							set2.push(d[a])
+						}
+						numList2.push(set2)
 
+						
+				});
 			//Define the margin//
 			var padding = 0;
 			//Define the scale//
@@ -206,6 +234,8 @@
 
 			mxapop = 40;
 			minpop = d3.min(popset);
+
+			var regionlist=["blue","pink","red","yellow","green"];
 
 
 
@@ -230,15 +260,17 @@
 				.attr("height", 10)
 				.attr("width", 10)
 				.attr("fill",function(d){return d3.rgb(255*(d[3]-minpop)/(mxapop-minpop)/50,255*(d[3]-minpop)/(mxapop-minpop),255*(d[3]-minpop)/(mxapop-minpop))})
-				// .on("click",barupdate(2))
+				.on("mouseover",function(d){
+					d3.select('#info').text("Region: " + regionlist[numList2[d[0]][d[1]]]);
+				})
+				.on("click",function(d){
+					return barupdate(numList2[d[0]][d[1]]+1)})
 				.style("opacity",0.6)
 				.append("title")
 				.text(function(d){
 					return "Population: " + d[3];
 				});
 
-			svg.selectAll("rect")
-				.data(numList).exit().remove()
 
 			// //Draw x and y axis//
 			// var xAxis = d3.svg.axis()
@@ -258,9 +290,10 @@
 			// 	.attr("transform", "translate(" + padding + ",0)")
 			// 	.call(yAxis);
 			});
+			});
 
 		function update(hour) {
-					var numList=[]
+					var numList3=[]
 
 					d3.csv("all_position_data.csv", function(data) {
 						data.forEach(function(d) {
@@ -272,7 +305,7 @@
 								d[a] = +d[a]
 								set.push(d[a]) 
 							}
-							numList.push(set)
+							numList3.push(set)
 							
 					});
 			var padding = 0;
@@ -285,7 +318,7 @@
 								.range([1000- padding,padding]);
 			var popset =[];
 
-			for(i=0;i<numList.length;i++){
+			for(i=0;i<numList3.length;i++){
 				for(j=3;j<34;j++){
 					popset.push(numList[i][j])
 				}
@@ -298,13 +331,14 @@
 			//Draw the scatter plot//
 			var svg = d3.select("body")
 						.select("div.heatmap")
+						.select("svg")
 						.attr("width", 1000)
 						.attr("height", 1000);
 
 			svg.selectAll("rect")
-				.data(numList)
+				.data(numList3)
 				.transition()
-				.duration(5)
+				.duration(1000)
 				.attr("class", "heatmap")
 				.attr("x", function(d) {
 					return xScale(d[0]);})
@@ -322,13 +356,13 @@
 				});
 
 			svg.selectAll("rect")
-				.data(numList).exit().remove()
+				.data(numList3).exit().remove()
 					})
 				};
 
 				var region = [1,2,3,4,5];
 
-				var heatmap = function(a) {	
+				var barchart = function(a) {	
 					d3.csv("areapopulation.csv", function(data) {
 						data.forEach(function(d) {
 							d.region = +d.region
@@ -378,7 +412,7 @@
 					   .attr("fill","navy")
 					   .append("title")
 					   .text(function(d){
-					   	return "population: " + d.pop
+					   	return "Time: " + Math.floor(d.hour) + ":" + (d.hour - Math.floor(d.hour))*60 + "\npopulation: " + d.pop
 					   });
 
 
@@ -404,7 +438,7 @@
 						.call(yAxis);
 		})
 				}
-				heatmap(1)
+				barchart(1)
 			var barupdate = function(a) {
 							d3.csv("areapopulation.csv", function(data) {
 								data.forEach(function(d) {
@@ -436,6 +470,7 @@
 							svg.selectAll("rect")
 							   .data(rdata)
 							   .transition()
+							   .duration(1000)
 							   .attr("x", function(d,i){
 							   	return ((height-2*padding)/15)*d.hour-(((height-2*padding)/15)*8-padding)-5})
 							   .attr("y", function(d,i) {
@@ -448,7 +483,7 @@
 							   .select("title")
 	   						   .transition()
 							   .text(function(d){
-							   	return "population: " + d.pop
+							   	return "Time: " + Math.floor(d.hour) + ":" + (d.hour - Math.floor(d.hour))*60 + "\npopulation: " + d.pop
 							   });
 
 
