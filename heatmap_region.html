@@ -27,6 +27,9 @@
 				margin-left: 10px;
 				margin-top: 10px;
 			}
+			.bar{
+				margin-left: 80px;
+			}
 			div#infobox {
 				width: 150px;
 				background: white;
@@ -342,7 +345,7 @@
 			svg.selectAll("rect")
 				.data(numList3)
 				.transition()
-				.duration(1000)
+				.duration(300)
 				.attr("class", "heatmap")
 				.attr("x", function(d) {
 					return xScale(d[0]);})
@@ -474,7 +477,7 @@
 							svg.selectAll("rect")
 							   .data(rdata)
 							   .transition()
-							   .duration(1000)
+							   .duration(300)
 							   .attr("x", function(d,i){
 							   	return ((height-2*padding)/15)*d.hour-(((height-2*padding)/15)*8-padding)-5})
 							   .attr("y", function(d,i) {
