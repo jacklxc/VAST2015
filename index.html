@@ -24,13 +24,13 @@
 			}
 			.graph-svg{
 				background-image:url("Park Map.png");
-				background-size: 700px 700px;
+				background-size: 600px 600px;
 				background-repeat:no-repeat; 
 				margin-left: 0px;
 				margin-top: 0px;
 			}
 			.PCA{
-				margin-top:120px;
+				margin-top:320px;
 				float:left;
 			}
 			div#infobox {
@@ -125,8 +125,8 @@
 		//Define the margin//
 		var padding = 40;
 
-		var w = 800
-			h = 600
+		var w = 500
+			h = 300
 		//Define the scale//
 		var xScale = d3.scale.linear()
 							.domain([d3.min(numList2,function(d){return d[0];}), d3.max(numList2,function(d){return d[0];})])
@@ -188,7 +188,7 @@
 			.call(yAxis);
 
 
-		map(4828)
+		map(1033337)
 
 
 
@@ -196,16 +196,17 @@
 		function map(aid){
 
 			var padding = 0;
+			var w2 = 600,
+				h2 = 600;
 			//Define the scale//
 			var xScale = d3.scale.linear()
 								.domain([0, 100])
-								.range([padding,700-padding]);
+								.range([padding, w2-padding]);
 			var yScale = d3.scale.linear()
 								.domain([0, 100])
-								.range([700- padding,padding]);
+								.range([h2- padding,padding]);
 			var timeset =[];
-			var w2 = 700,
-				h2 = 700;
+
 
 			for(i=0;i<numList[aid].length;i++){
 				var ttime = numList[aid][i][2]*3600+numList[aid][i][3]*60 +numList[aid][i][4];
@@ -265,7 +266,7 @@
 
 			svg.append("g")
 			   .attr("class","axis")
-			   .attr("transform", "translate(0," + (700-padding)+ ")")
+			   .attr("transform", "translate(0," + (w2 - padding)+ ")")
 			   .call(xAxis);	
 
 			svg.append("g")
@@ -278,16 +279,16 @@
 
 		function update(id){
 			var padding = 0;
+			var w2 = 600,
+				h2 = 600;
 			//Define the scale//
 			var xScale = d3.scale.linear()
 								.domain([0, 100])
-								.range([padding,700-padding]);
+								.range([padding,w2-padding]);
 			var yScale = d3.scale.linear()
 								.domain([0, 100])
-								.range([700- padding,padding]);
+								.range([h2- padding,padding]);
 			var timeset =[];
-			var w2 = 700
-				h2 = 700
 
 			for(i=0;i<numList[id].length;i++){
 				var ttime = numList[id][i][2]*3600+numList[id][i][3]*60 +numList[id][i][4];

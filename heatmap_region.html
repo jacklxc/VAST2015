@@ -22,7 +22,7 @@
 			}
 			.graph-svg{
 				background-image:url("Park Map.png");
-				background-size: 1000px 1000px;
+				background-size: 600px 600px;
 				background-repeat:no-repeat; 
 				margin-left: 10px;
 				margin-top: 10px;
@@ -217,13 +217,15 @@
 				});
 			//Define the margin//
 			var padding = 0;
+			var h = 600,
+				w = 600;
 			//Define the scale//
 			var xScale = d3.scale.linear()
 								.domain([0, 100])
-								.range([padding,1000-padding]);
+								.range([padding,w-padding]);
 			var yScale = d3.scale.linear()
 								.domain([0, 100])
-								.range([1000- padding,padding]);
+								.range([h- padding,padding]);
 			var popset =[];
 
 			for(i=0;i<numList.length;i++){
@@ -243,8 +245,8 @@
 			var svg = d3.select("body")
 						.select("div.heatmap")
 						.append("svg")
-						.attr("width", 1100)
-						.attr("height", 1100)
+						.attr("width", w)
+						.attr("height", h)
 						.attr("class", "graph-svg");
 
 			svg.selectAll("rect")
@@ -255,10 +257,10 @@
 				.attr("x", function(d) {
 					return xScale(d[0]);})
 				.attr("y", function(d) {
-					return yScale(d[1])-10;
+					return yScale(d[1]+1);
 				})
-				.attr("height", 10)
-				.attr("width", 10)
+				.attr("height", 6)
+				.attr("width", 6)
 				.attr("fill",function(d){return d3.rgb(255*(d[3]-minpop)/(mxapop-minpop)/50,255*(d[3]-minpop)/(mxapop-minpop),255*(d[3]-minpop)/(mxapop-minpop))})
 				.on("mouseover",function(d){
 					d3.select('#info').text("Region: " + regionlist[numList2[d[0]][d[1]]]);
@@ -309,13 +311,15 @@
 							
 					});
 			var padding = 0;
+			var w1 = 600,
+				h1 = 600;
 			//Define the scale//
 			var xScale = d3.scale.linear()
 								.domain([0, 100])
-								.range([padding,1000-padding]);
+								.range([padding,w1-padding]);
 			var yScale = d3.scale.linear()
 								.domain([0, 100])
-								.range([1000- padding,padding]);
+								.range([h1- padding,padding]);
 			var popset =[];
 
 			for(i=0;i<numList3.length;i++){
@@ -332,8 +336,8 @@
 			var svg = d3.select("body")
 						.select("div.heatmap")
 						.select("svg")
-						.attr("width", 1000)
-						.attr("height", 1000);
+						.attr("width", w1)
+						.attr("height", h1);
 
 			svg.selectAll("rect")
 				.data(numList3)
@@ -343,10 +347,10 @@
 				.attr("x", function(d) {
 					return xScale(d[0]);})
 				.attr("y", function(d) {
-					return yScale(d[1])-10;
+					return yScale(d[1]+1);
 				})
-				.attr("height", 10)
-				.attr("width", 10)
+				.attr("height", 6)
+				.attr("width", 6)
 				.attr("fill",function(d){return d3.rgb(255*(d[hour]-minpop)/(mxapop-minpop)/50,255*(d[hour]-minpop)/(mxapop-minpop),255*(d[hour]-minpop)/(mxapop-minpop))})
 				.style("opacity",0.6)
 				.select("title")
@@ -376,7 +380,7 @@
 
 					//Define the margin//
 					var padding = 50,
-						height = 530
+						height = 430
 						maxpop = d3.max(data,function(d) {
 						return d.pop
 					}),
@@ -404,10 +408,10 @@
 					   .attr("x", function(d,i){
 					   	return ((height-2*padding)/15)*d.hour-(((height-2*padding)/15)*8-padding)-5})
 					   .attr("y", function(d,i) {
-					   	return height - padding - d.pop/(maxpop/430)})
+					   	return height - padding - d.pop/(maxpop/330)})
 					   .attr("width", 10)
 					   .attr("height", function(d,i){
-					   	return d.pop/(maxpop/430)
+					   	return d.pop/(maxpop/330)
 					   })
 					   .attr("fill","navy")
 					   .append("title")
@@ -429,7 +433,7 @@
 
 					svg.append("g")
 					   .attr("class","axis")
-					   .attr("transform", "translate(0," + (530-padding)+ ")")
+					   .attr("transform", "translate(0," + (430-padding)+ ")")
 					   .call(xAxis);	
 
 					svg.append("g")
@@ -453,7 +457,7 @@
 
 							//Define the margin//
 							var padding = 50,
-								height = 530
+								height = 430
 								maxpop = d3.max(data,function(d) {
 								return d.pop
 							}),
@@ -464,8 +468,8 @@
 
 							var svg = d3.select("body")
 										.select("div.bar")
-										.attr("width", 1000)
-										.attr("height", 1000);
+										.attr("width", 500)
+										.attr("height", 500);
 
 							svg.selectAll("rect")
 							   .data(rdata)
@@ -474,10 +478,10 @@
 							   .attr("x", function(d,i){
 							   	return ((height-2*padding)/15)*d.hour-(((height-2*padding)/15)*8-padding)-5})
 							   .attr("y", function(d,i) {
-							   	return height - padding - d.pop/(maxpop/430)})
+							   	return height - padding - d.pop/(maxpop/330)})
 							   .attr("width", 10)
 							   .attr("height", function(d,i){
-							   	return d.pop/(maxpop/430)
+							   	return d.pop/(maxpop/330)
 							   })
 							   .attr("fill","navy")
 							   .select("title")
